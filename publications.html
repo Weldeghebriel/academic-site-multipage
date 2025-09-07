@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Publications — Mebrahtu Weldeghebriel</title>
+<link rel="stylesheet" href="style.css">
+<meta name="description" content="Mebrahtu F. Weldeghebriel — Academic website. Paleocean chemistry, lithium isotopes, seawater chemistry, geochemical modeling.">
+</head><body>
+<header class="site-header"><div class="wrap">
+  <div class="brand"><a class="logo" href="index.html" aria-label="Home">MW</a>
+    <div class="titleblock"><strong>Mebrahtu F. Weldeghebriel</strong><span class="muted">Postdoctoral Research Associate · Princeton University</span></div></div>
+  <nav class="nav">
+    <a href="index.html">About</a><a href="publications.html">Publications</a><a href="teaching.html">Teaching</a>
+    <a href="talks.html">Talks & Service</a><a href="projects.html">Projects</a><a href="photos.html">Photos</a>
+    <a href="news.html">News</a><a href="contact.html">Contact</a>
+  </nav>
+</div></header><main class="wrap">
+<h1>Publications</h1>
+<div class="card">
+  <div class="searchbar">
+    <input id="q" type="search" placeholder="Search title, journal, or author…">
+    <select id="year"></select>
+    <select id="ptype">
+      <option value="">All types</option>
+      <option>article</option><option>inproceedings</option><option>book</option>
+      <option>phdthesis</option><option>mastersthesis</option><option>unpublished</option><option>misc</option>
+    </select>
+    <button class="btn ghost" id="clearFilters" type="button">Clear</button>
+  </div>
+  <div id="pubList" class="list"></div>
+  <p class="muted" style="margin-top:.6rem">This list is generated automatically from <code>assets/publications.bib</code>.</p>
+</div>
+<script>
+async function loadBib(){ const res = await fetch('assets/publications.bib'); if(!res.ok) throw new Error('Load error'); return parseBibTeX(await res.text()); }
+function parseBibTeX(text){ const entries=[]; let i=0,n=text.length; while(i<n){ const at=text.indexOf('@',i); if(at==-1) break; let j=text.indexOf('{',at); if(j==-1) break; const type=text.slice(at+1,j).trim().toLowerCase(); let k=text.indexOf(',',j+1); if(k==-1) break; const key=text.slice(j+1,k).trim(); let brace=1,p=k+1; while(p<n && brace>0){ const ch=text[p]; if(ch=='{') brace++; else if(ch=='}') brace--; if(ch=='"'){ p++; while(p<n && text[p] != '"'){ if(text[p]=='\\') p++; p++; } } p++; } const block=text.slice(k+1,p-1).trim(); const raw=text.slice(at,p); const fields=parseFields(block); entries.push({type,key,fields,raw}); i=p; } return entries; }
+function parseFields(block){ const fields={}; let cur='',depth=0,inQ=false; const push=s=>{ const idx=s.indexOf('='); if(idx>-1){ const name=s.slice(0,idx).trim().toLowerCase(); let val=s.slice(idx+1).trim(); if(val.startsWith('{') && val.endsWith('}')) val=val.slice(1,-1); if(val.startsWith('"') && val.endsWith('"')) val=val.slice(1,-1); fields[name]=val.trim(); } }; for(let i=0;i<block.length;i++){ const ch=block[i]; if(ch=='"') inQ=!inQ; if(!inQ && ch=='{') depth++; if(!inQ && ch=='}') depth=Math.max(0,depth-1); if(!inQ && depth==0 && ch==','){ push(cur); cur=''; continue; } cur+=ch; } if(cur.trim()) push(cur); return fields; }
+function fmtAuthors(a){ if(!a) return ''; return a.split(/\band\b/i).map(s=>s.trim()).map(n=>{ const p=n.split(','); return (p.length==2 ? (p[1].trim()+' '+p[0].trim()) : n).trim(); }).join('; '); }
+function entryHTML(e){ const f=e.fields, title=f.title||e.key, auth=fmtAuthors(f.author||''), year=f.year||'', where=f.journal||f.booktitle||'', extra=[f.volume,f.number,f.pages].filter(Boolean).join(', '), link=f.doi?('https://doi.org/'+f.doi):(f.url||''), pill=`<span class='pill'>${e.type}</span>`, line2=[auth,where,extra].filter(Boolean).join(' • '), linkBtn=link?`<a class='pill' href='${link}' target='_blank' rel='noopener'>Link</a>`:'', bibBtn=`<button class='pill' onclick='navigator.clipboard.writeText(${json.dumps("@")}+e.raw);this.textContent="Copied";setTimeout(()=>this.textContent="BibTeX",1200)'>BibTeX</button>`; return `<article class='pub card'><div class='title'>${title}</div><div class='meta'>${line2} • ${year} • ${pill}</div><div style='margin-top:.4rem'>${linkBtn} ${bibBtn}</div></article>`; }
+function applyFilters(data){ const q=(document.getElementById('q').value||'').toLowerCase(), y=(document.getElementById('year').value||'').toLowerCase(), t=(document.getElementById('ptype').value||'').toLowerCase(); return data.filter(e=>{ const f=e.fields, hay=(e.raw+' '+(f.title||'')+' '+(f.journal||f.booktitle||'')+' '+(f.author||'')).toLowerCase(), yy=(f.year||'').toString().toLowerCase(); return (!q||hay.includes(q)) && (!y||yy===y) && (!t||e.type===t); }); }
+(async function(){ try{ const entries=await loadBib(); const years=[...new Set(entries.map(e=>e.fields.year).filter(Boolean))].sort((a,b)=>b-a); const ysel=document.getElementById('year'); ysel.innerHTML='<option value="">All years</option>'+years.map(y=>`<option>${y}</option>`).join(''); entries.sort((a,b)=>(parseInt(b.fields.year||0)||0)-(parseInt(a.fields.year||0)||0)); function render(){ const list=document.getElementById('pubList'); const items=applyFilters(entries); list.innerHTML=items.map(entryToHTML).join('')||'<p class="muted">No results — try clearing filters.</p>'; } ['q','ptype'].forEach(id=>document.getElementById(id).addEventListener('input',render)); ysel.addEventListener('input',render); document.getElementById('clearFilters').addEventListener('click',()=>{document.getElementById('q').value=''; ysel.value=''; document.getElementById('ptype').value=''; render();}); render(); }catch(err){ document.getElementById('pubList').innerHTML='<p class="muted">Could not load publications.bib. Ensure the file exists in <code>assets</code>.</p>'; console.error(err); } })();
+</script>
+</main><footer class="site-footer"><div class="wrap footer-grid">
+  <div>© 2025 Mebrahtu F. Weldeghebriel</div><div class="muted">Last updated: 2025-09-07</div>
+</div></footer></body></html>

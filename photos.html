@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photos — Mebrahtu Weldeghebriel</title>
+<link rel="stylesheet" href="style.css">
+<meta name="description" content="Mebrahtu F. Weldeghebriel — Academic website. Paleocean chemistry, lithium isotopes, seawater chemistry, geochemical modeling.">
+</head><body>
+<header class="site-header"><div class="wrap">
+  <div class="brand"><a class="logo" href="index.html" aria-label="Home">MW</a>
+    <div class="titleblock"><strong>Mebrahtu F. Weldeghebriel</strong><span class="muted">Postdoctoral Research Associate · Princeton University</span></div></div>
+  <nav class="nav">
+    <a href="index.html">About</a><a href="publications.html">Publications</a><a href="teaching.html">Teaching</a>
+    <a href="talks.html">Talks & Service</a><a href="projects.html">Projects</a><a href="photos.html">Photos</a>
+    <a href="news.html">News</a><a href="contact.html">Contact</a>
+  </nav>
+</div></header><main class="wrap">
+<h1>Photos</h1>
+<p class="muted">Add images to <code>assets/photos/</code> with names like <code>photo-1.jpg</code>, <code>photo-2.jpg</code>, … They will display automatically below.</p>
+<div class="gallery" id="gallery"></div>
+<script>
+const gallery=document.getElementById('gallery');
+gallery.innerHTML = Array.from({length:12}, (_,i)=>`<figure><img src="assets/photos/photo-${i+1}.jpg" alt="Photo"></figure>`).join('');
+</script>
+</main><footer class="site-footer"><div class="wrap footer-grid">
+  <div>© 2025 Mebrahtu F. Weldeghebriel</div><div class="muted">Last updated: 2025-09-07</div>
+</div></footer></body></html>

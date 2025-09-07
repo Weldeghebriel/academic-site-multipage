@@ -1,0 +1,1 @@
+Add images named photo-1.jpg, photo-2.jpg, ... to display in the gallery.

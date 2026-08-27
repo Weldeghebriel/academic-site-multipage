@@ -1,0 +1,33 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='720' height='420' viewBox='0 0 720 420'><rect width='100%' height='100%' fill='#ffffff'/><g transform='translate(40,30)' font-family='system-ui, sans-serif'>
+<line x1='0' y1='230' x2='640' y2='230' stroke='#94a3b8' stroke-width='2'/>
+<text x='0' y='252' font-size='11' fill='#334155'>3.0 Ga</text>
+<text x='300' y='252' font-size='11' fill='#334155'>541 Ma (Ediacaran–Cambrian)</text>
+<text x='520' y='252' font-size='11' fill='#334155'>252 Ma (P–Tr)</text>
+<text x='610' y='252' font-size='11' fill='#334155'>today</text>
+<line x1='300' y1='210' x2='300' y2='230' stroke='#f43f5e' stroke-width='2'/>
+<line x1='520' y1='210' x2='520' y2='230' stroke='#f43f5e' stroke-width='2'/>
+<path d='M0,150 C120,120 200,180 300,140 C400,100 460,190 520,150 C580,120 620,160 640,140' fill='none' stroke='#0ea5e9' stroke-width='3'/>
+<path d='M0,120 C120,150 220,90 300,110 C400,130 480,80 520,110 C580,130 620,100 640,120' fill='none' stroke='#a78bfa' stroke-width='3'/>
+<path d='M0,180 C140,170 220,210 300,190 C420,160 480,210 520,190 C580,175 620,195 640,185' fill='none' stroke='#22d3a5' stroke-width='3'/>
+<text x='450' y='95' font-size='12' fill='#a78bfa'>δ⁷Li</text>
+<text x='450' y='128' font-size='12' fill='#0ea5e9'>Mg/Ca</text>
+<text x='450' y='215' font-size='12' fill='#22d3a5'>⁸⁷Sr/⁸⁶Sr</text>
+<g>
+<rect x='30' y='280' width='80' height='55' rx='8' fill='#f8fafc' stroke='#94a3b8'/>
+<text x='70' y='310' text-anchor='middle' font-size='11' fill='#334155'>Halite</text>
+<rect x='150' y='280' width='90' height='55' rx='8' fill='#f8fafc' stroke='#94a3b8'/>
+<text x='195' y='305' text-anchor='middle' font-size='11' fill='#334155'>Marine</text>
+<text x='195' y='320' text-anchor='middle' font-size='11' fill='#334155'>dolostone</text>
+<rect x='280' y='280' width='90' height='55' rx='8' fill='#f8fafc' stroke='#94a3b8'/>
+<text x='325' y='305' text-anchor='middle' font-size='11' fill='#334155'>Marine</text>
+<text x='325' y='320' text-anchor='middle' font-size='11' fill='#334155'>carbonate</text>
+<rect x='410' y='280' width='90' height='55' rx='8' fill='#eef2ff' stroke='#7c3aed'/>
+<text x='455' y='305' text-anchor='middle' font-size='11' fill='#334155'>Box model</text>
+<text x='455' y='320' text-anchor='middle' font-size='11' fill='#334155'>Li–Mg–Sr–Ca–B</text>
+<defs><marker id='arrM' viewBox='0 0 10 10' refX='6' refY='5' markerWidth='6' markerHeight='6' orient='auto-start-reverse'><path d='M0 0L10 5L0 10z' fill='#64748b'/></marker></defs>
+<line x1='110' y1='300' x2='150' y2='300' stroke='#64748b' stroke-width='2' marker-end='url(#arrM)'/>
+<line x1='240' y1='300' x2='280' y2='300' stroke='#64748b' stroke-width='2' marker-end='url(#arrM)'/>
+<line x1='370' y1='300' x2='410' y2='300' stroke='#64748b' stroke-width='2' marker-end='url(#arrM)'/>
+</g>
+<text x='0' y='372' font-size='13' fill='#334155'>Multi-proxy, multi-archive records feeding coupled isotope–elemental seawater models.</text>
+</g></svg>

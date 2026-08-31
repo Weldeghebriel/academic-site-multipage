@@ -2,9 +2,9 @@
 
 Personal academic site — static HTML, no build step, served by GitHub Pages.
 
-**This branch (`simple-minimal`) is design option 1: minimal and typographic.**
-White page, one navy serif, generous whitespace, no cards or boxes. The home
-page is a single sentence. Compare with branch `simple-lab`.
+**This branch (`simple-lab`) is design option 2: photographic and lab-styled.**
+Dark utility nav bar, full-bleed photo hero with an uppercase overlay, plain
+white content sections in a sans-serif. Compare with branch `simple-minimal`.
 
 ## Pages
 
@@ -19,6 +19,22 @@ page is a single sentence. Compare with branch `simple-lab`.
 
 There is deliberately **no public CV page**. The CV is available on request via
 the contact page.
+
+## Replacing the hero photo
+
+The hero is `assets/photos/photo-1.jpg`, styled by `.hero-img` in `style.css`.
+It is a portrait at an instrument, so the overlay text is anchored to the
+**bottom left** and sits on a gradient scrim rather than across the subject.
+
+A wide landscape photograph — field site, outcrop, ice, or salt flat — would
+suit this design better and would allow the centred overlay used by the
+reference site. To swap it in:
+
+1. Drop the new file in `assets/photos/`.
+2. Point `src` in `index.html` at it and update the `alt` text.
+3. If the subject sits high or low in the frame, adjust `object-position` on
+   `.hero-img` (currently `50% 35%`).
+4. Keep it under about 500 KB — resize to 2000 px wide before committing.
 
 ## Publications update themselves
 

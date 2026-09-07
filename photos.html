@@ -24,26 +24,20 @@
     <a href="photos.html">Photos</a><a href="news.html">News</a><a href="contact.html">Contact</a>
   </nav>
 </div></header>
+
+<section class="hero"><div class="wrap grid cols-2">
+  <div>
+    <p class="kicker">Welcome</p>
+    <h1>Mebrahtu F. Weldeghebriel, PhD</h1>
+    <p class="lead">This website is currently under reconstruction. Please check back soon.</p>
+  </div>
+
+  <div class="portrait-frame"><img src="assets/portrait.jpg" alt="Mebrahtu F. Weldeghebriel"></div>
+</div></section>
+
 <main class="wrap" id="main">
-<h1>Photos</h1>
-<p class="lead">Field and lab work across Antarctica, the Dead Sea, halite mines, and the LA-ICP-MS lab at Princeton.</p>
-<div class="gallery" id="gallery"></div>
-<script>
-const CAPTIONS = [
-  "In the lab with the LA-ICP-MS system",
-];
-const TOTAL_SLOTS = 8;
-const gallery = document.getElementById('gallery');
-let html = '';
-for (let i = 1; i <= TOTAL_SLOTS; i++){
-  const src = `assets/photos/photo-${i}.jpg`;
-  const cap = CAPTIONS[i-1] || '';
-  html += `<figure data-src="${src}"><img src="${src}" alt="${cap || 'Field or lab photo'}" loading="lazy"
-    onerror="this.closest('figure').innerHTML='<div class=&quot;ph-empty&quot;>Photo ${i} coming soon</div>'"></figure>`;
-}
-gallery.innerHTML = html;
-</script>
 </main>
+
 <footer class="site-footer"><div class="wrap footer-grid">
   <div>© <span id="year"></span> Mebrahtu F. Weldeghebriel</div><div class="muted">Department of Geosciences · Princeton University</div>
 </div></footer>

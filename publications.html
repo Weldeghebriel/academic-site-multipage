@@ -24,64 +24,22 @@
     <a href="photos.html">Photos</a><a href="news.html">News</a><a href="contact.html">Contact</a>
   </nav>
 </div></header>
-<main class="wrap" id="main">
-<h1>Publications</h1>
-<p class="lead">Generated from <code>assets/publications.bib</code>, which syncs from ORCID automatically (see <a href="https://github.com/Weldeghebriel/academic-site-multipage/blob/main/.github/workflows/sync-publications.yml" target="_blank" rel="noopener">the sync workflow</a>). Manual edits (keywords, in-review/in-prep notes) are preserved across syncs.</p>
-<div class="card">
-  <div class="searchbar">
-    <input id="q" type="search" placeholder="Search title, journal, or author…">
-    <select id="year"></select>
-    <select id="ptype">
-      <option value="">All types</option>
-      <option value="article">Published</option>
-      <option value="unpublished">In review / in prep</option>
-    </select>
-    <button class="btn ghost" id="clearFilters" type="button">Clear</button>
+
+<section class="hero"><div class="wrap grid cols-2">
+  <div>
+    <p class="kicker">Welcome</p>
+    <h1>Mebrahtu F. Weldeghebriel, PhD</h1>
+    <p class="lead">This website is currently under reconstruction. Please check back soon.</p>
   </div>
-  <div id="pubList" class="list"></div>
-  <p class="muted" style="margin-top:.6rem">10 peer-reviewed publications, 2 in review, 4 in preparation (as tracked in the .bib).</p>
-</div>
+
+  <div class="portrait-frame"><img src="assets/portrait.jpg" alt="Mebrahtu F. Weldeghebriel"></div>
+</div></section>
+
+<main class="wrap" id="main">
 </main>
+
 <footer class="site-footer"><div class="wrap footer-grid">
   <div>© <span id="year"></span> Mebrahtu F. Weldeghebriel</div><div class="muted">Department of Geosciences · Princeton University</div>
 </div></footer>
-<script src="assets/pubs.js"></script>
 <script src="assets/site.js"></script>
-<script>
-(async function(){
-  try{
-    const entries = await loadBib();
-    const years = [...new Set(entries.map(e=>e.fields.year).filter(Boolean))].sort((a,b)=>b-a);
-    const ysel = document.getElementById('year');
-    ysel.innerHTML = '<option value="">All years</option>' + years.map(y=>`<option>${y}</option>`).join('');
-    entries.sort((a,b)=>(parseInt(b.fields.year||0,10)||0)-(parseInt(a.fields.year||0,10)||0));
-
-    function applyFilters(data){
-      const q=(document.getElementById('q').value||'').toLowerCase();
-      const y=(ysel.value||'').toLowerCase();
-      const t=(document.getElementById('ptype').value||'').toLowerCase();
-      return data.filter(e=>{
-        const f=e.fields;
-        const hay=(e.raw+' '+(f.title||'')+' '+(f.journal||f.booktitle||'')+' '+(f.author||'')).toLowerCase();
-        const yy=(f.year||'').toString().toLowerCase();
-        return (!q||hay.includes(q)) && (!y||yy===y) && (!t||e.type===t);
-      });
-    }
-    function render(){
-      const list=document.getElementById('pubList');
-      const items=applyFilters(entries);
-      list.innerHTML = items.map(entryHTML).join('') || '<p class="muted">No results — try clearing filters.</p>';
-    }
-    ['q','ptype'].forEach(id=>document.getElementById(id).addEventListener('input',render));
-    ysel.addEventListener('input',render);
-    document.getElementById('clearFilters').addEventListener('click',()=>{
-      document.getElementById('q').value=''; ysel.value=''; document.getElementById('ptype').value=''; render();
-    });
-    render();
-  }catch(err){
-    document.getElementById('pubList').innerHTML = '<p class="muted">Could not load publications.bib.</p>';
-    console.error(err);
-  }
-})();
-</script>
 </body></html>

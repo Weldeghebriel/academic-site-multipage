@@ -170,6 +170,12 @@ button.pill{cursor:pointer;font:inherit}
 /* Publications */
 .pub .title{font-weight:700;font-family:var(--serif)}
 .pub .meta{color:var(--muted);font-size:.92rem;margin-top:.2rem}
+.pub-row{display:flex;gap:.8rem;align-items:flex-start}
+.pub-num{
+  flex:none;min-width:2.1rem;padding-top:1.3rem;
+  font-family:var(--serif);font-weight:700;font-size:1.05rem;color:var(--brand);
+  text-align:right;
+}
 
 /* Search controls */
 .searchbar{display:flex;gap:.6rem;flex-wrap:wrap;margin:.5rem 0}

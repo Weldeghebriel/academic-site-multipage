@@ -70,6 +70,9 @@
     }
     entries.sort((a,b)=>(parseInt(b.fields.year||0,10)||0)-(parseInt(a.fields.year||0,10)||0));
 
+    const allPublished = entries.filter(e=>!isPending(e));
+    allPublished.forEach((e,i)=>{ e.__num = allPublished.length - i; });
+
     function applyFilters(data){
       const q=(document.getElementById('q').value||'').toLowerCase();
       const y=(ysel.value||'').toLowerCase();
@@ -86,7 +89,9 @@
       const pending=filtered.filter(isPending).sort((a,b)=>
         statusRank(a)-statusRank(b) || (parseInt(b.fields.year||0,10)||0)-(parseInt(a.fields.year||0,10)||0)
       );
-      document.getElementById('pubList').innerHTML = published.map(entryHTML).join('') || '<p class="muted">No results — try clearing filters.</p>';
+      document.getElementById('pubList').innerHTML = published.map(e=>
+        `<div class="pub-row"><span class="pub-num">${e.__num}</span><div style="flex:1;min-width:0">${entryHTML(e)}</div></div>`
+      ).join('') || '<p class="muted">No results — try clearing filters.</p>';
       document.getElementById('pubListPending').innerHTML = pending.map(entryHTML).join('') || '<p class="muted">No results — try clearing filters.</p>';
     }
     document.getElementById('q').addEventListener('input',render);

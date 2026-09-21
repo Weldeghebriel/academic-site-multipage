@@ -61,7 +61,8 @@ function fmtAuthors(a){
   if(!a) return '';
   return a.split(/\band\b/i).map(s=>s.trim()).map(n=>{
     const p=n.split(',');
-    return (p.length===2 ? (p[1].trim()+' '+p[0].trim()) : n).trim();
+    const name=(p.length===2 ? (p[1].trim()+' '+p[0].trim()) : n).trim();
+    return /weldeghebriel/i.test(name) ? `<strong>${name}</strong>` : name;
   }).join('; ');
 }
 

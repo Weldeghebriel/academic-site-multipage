@@ -121,3 +121,16 @@ async function renderRelated(targetId, tags, maxItems, bibPath){
     || '<p class="muted">No related publications found — add keywords to your .bib.</p>';
   host.innerHTML = out;
 }
+
+/* Exact, hand-curated related-publications list (by .bib citekey), for
+   pages where automatic keyword matching pulls in too much. */
+async function renderRelatedByKeys(targetId, keys, bibPath){
+  const host=document.getElementById(targetId);
+  if(!host) return;
+  let entries;
+  try{ entries = await loadBib(bibPath); } catch(err){ host.innerHTML='<p class="muted">Could not load publications.</p>'; return; }
+  const byKey=new Map(entries.map(e=>[e.key, e]));
+  const out = keys.map(k=>byKey.get(k)).filter(Boolean).map(entryHTML).join('')
+    || '<p class="muted">No related publications found.</p>';
+  host.innerHTML = out;
+}

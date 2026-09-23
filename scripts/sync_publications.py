@@ -13,6 +13,7 @@ This script only ever *appends* new entries. It never rewrites or deletes
 an existing entry, so manually curated fields (keywords, in-review /
 in-preparation notes on manuscripts with no DOI yet) are always preserved.
 """
+import html
 import json
 import re
 import sys
@@ -45,6 +46,33 @@ def existing_dois(bib_text):
     return set(m.group(1).strip().lower() for m in re.finditer(r"doi\s*=\s*\{([^}]+)\}", bib_text))
 
 
+SUP = {"0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴",
+       "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹",
+       "+": "⁺", "-": "⁻"}
+SUB = {"0": "₀", "1": "₁", "2": "₂", "3": "₃", "4": "₄",
+       "5": "₅", "6": "₆", "7": "₇", "8": "₈", "9": "₉",
+       "+": "₊", "-": "₋"}
+SUP_CHARS = "".join(SUP.values())
+
+
+def clean_abstract(raw):
+    """Crossref abstracts come as JATS XML for publishers that supply them
+    (mostly Nature/AAAS/Wiley; Elsevier journals typically supply none, so
+    this returns '' for those and the field is simply omitted)."""
+    if not raw:
+        return ""
+    s = re.sub(r"<jats:sup>(.*?)</jats:sup>",
+                lambda m: "".join(SUP.get(c, c) for c in m.group(1)), raw, flags=re.S)
+    s = re.sub(r"<jats:sub>(.*?)</jats:sub>",
+                lambda m: "".join(SUB.get(c, c) for c in m.group(1)), s, flags=re.S)
+    s = re.sub(r"</?jats:[a-z]+[^>]*>", "", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    s = re.sub(r"\s*([" + SUP_CHARS + r"]+)\s*", r"\1", s)
+    s = re.sub(r"^(abstract)\s*", "", s, flags=re.I)
+    s = html.unescape(s)
+    return re.sub(r"\s+\)", ")", s).strip()
+
+
 def crossref_entry(doi):
     url = f"https://api.crossref.org/works/{urllib.request.quote(doi)}"
     data = fetch_json(url, {"User-Agent": UA})
@@ -53,6 +81,7 @@ def crossref_entry(doi):
     journal = (msg.get("container-title") or [""])[0]
     volume = msg.get("volume", "")
     pages = msg.get("page", "")
+    abstract = clean_abstract(msg.get("abstract", ""))
     year = ""
     for key in ("published-print", "published-online", "published", "issued"):
         parts = msg.get(key, {}).get("date-parts")
@@ -81,6 +110,8 @@ def crossref_entry(doi):
     if year:
         lines.append(f"  year = {{{year}}},")
     lines.append(f"  doi = {{{doi}}},")
+    if abstract:
+        lines.append(f"  abstract = {{{abstract.replace('{', '(').replace('}', ')')}}},")
     lines.append("  keywords = {auto-synced}")
     lines.append("}")
     return "\n".join(lines) + "\n"

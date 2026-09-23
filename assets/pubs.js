@@ -86,7 +86,8 @@ function entryHTML(e){
   const line2=[auth,where,extra].filter(Boolean).join(' • ');
   const linkBtn=link?`<a class="pill" href="${link}" target="_blank" rel="noopener">Link</a>`:'';
   const bibBtn=`<button class="pill" type="button" data-raw="${encodeURIComponent(e.raw)}" onclick="copyBibtex(this)">BibTeX</button>`;
-  return `<article class="pub card"><div class="title">${title}</div><div class="meta">${line2}${line2?' • ':''}${year} ${pill}</div><div style="margin-top:.5rem;display:flex;gap:.4rem;flex-wrap:wrap">${linkBtn} ${bibBtn}</div></article>`;
+  const abstract=f.abstract?`<details class="bio" style="margin-top:.6rem"><summary>Abstract</summary><p>${f.abstract}</p></details>`:'';
+  return `<article class="pub card"><div class="title">${title}</div><div class="meta">${line2}${line2?' • ':''}${year} ${pill}</div><div style="margin-top:.5rem;display:flex;gap:.4rem;flex-wrap:wrap">${linkBtn} ${bibBtn}</div>${abstract}</article>`;
 }
 
 function copyBibtex(btn){

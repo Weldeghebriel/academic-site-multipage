@@ -130,6 +130,7 @@ a.pill:hover{color:var(--ink);border-color:var(--brand)}
 button.pill{cursor:pointer;font:inherit}
 .pill.status-review{color:var(--warn);border-color:rgba(251,191,36,.4)}
 .pill.status-prep{color:var(--muted);border-color:var(--border)}
+.topic-pills .pill{border-width:1.5px;border-color:rgba(56,189,248,.55)}
 
 /* Kicker */
 .kicker{color:var(--brand);text-transform:uppercase;letter-spacing:.1em;font-size:.72rem;font-weight:800}

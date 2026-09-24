@@ -99,12 +99,25 @@ async function renderNewsTeaser(targetId, maxItems){
     overlay.scrollLeft = 0;
   }
 
-  function enterZoom(){
+  // Zoom in, keeping the point under (clientX, clientY) in view instead of
+  // always jumping to the top-left corner of the enlarged image.
+  function enterZoom(clientX, clientY){
+    var beforeRect = img.getBoundingClientRect();
+    var fx = beforeRect.width ? (clientX - beforeRect.left) / beforeRect.width : 0.5;
+    var fy = beforeRect.height ? (clientY - beforeRect.top) / beforeRect.height : 0.5;
+
     var targetWidth = Math.max(img.naturalWidth || 0, Math.round(window.innerWidth * 1.6));
     img.style.maxWidth = 'none';
     img.style.maxHeight = 'none';
     img.style.width = targetWidth + 'px';
     overlay.classList.add('zoomed');
+
+    var overlayRect = overlay.getBoundingClientRect();
+    var afterRect = img.getBoundingClientRect();
+    var imgLeftInScroll = overlay.scrollLeft + (afterRect.left - overlayRect.left);
+    var imgTopInScroll = overlay.scrollTop + (afterRect.top - overlayRect.top);
+    overlay.scrollLeft = imgLeftInScroll + fx * afterRect.width - overlay.clientWidth / 2;
+    overlay.scrollTop = imgTopInScroll + fy * afterRect.height - overlay.clientHeight / 2;
   }
 
   function open(src, alt){
@@ -131,9 +144,40 @@ async function renderNewsTeaser(targetId, maxItems){
     });
   });
 
-  img.addEventListener('click', function(e){
-    e.stopPropagation();
-    if(overlay.classList.contains('zoomed')) exitZoom(); else enterZoom();
+  // Click-vs-drag: a plain click toggles zoom; a drag (beyond a small
+  // threshold) pans the zoomed image by scrolling the overlay.
+  var dragging = false, moved = false, lastX = 0, lastY = 0, downX = 0, downY = 0;
+
+  img.addEventListener('pointerdown', function(e){
+    if(e.button !== undefined && e.button !== 0) return;
+    dragging = true;
+    moved = false;
+    downX = lastX = e.clientX;
+    downY = lastY = e.clientY;
+    img.setPointerCapture(e.pointerId);
+    if(overlay.classList.contains('zoomed')) overlay.classList.add('dragging');
+    e.preventDefault();
+  });
+
+  img.addEventListener('pointermove', function(e){
+    if(!dragging) return;
+    var dx = e.clientX - lastX, dy = e.clientY - lastY;
+    if(!moved && Math.abs(e.clientX - downX) + Math.abs(e.clientY - downY) > 4) moved = true;
+    if(moved && overlay.classList.contains('zoomed')){
+      overlay.scrollLeft -= dx;
+      overlay.scrollTop -= dy;
+    }
+    lastX = e.clientX;
+    lastY = e.clientY;
+  });
+
+  img.addEventListener('pointerup', function(e){
+    dragging = false;
+    overlay.classList.remove('dragging');
+    if(!moved){
+      if(overlay.classList.contains('zoomed')) exitZoom();
+      else enterZoom(e.clientX, e.clientY);
+    }
   });
 
   overlay.addEventListener('click', function(e){

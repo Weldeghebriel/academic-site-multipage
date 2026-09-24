@@ -142,6 +142,8 @@ p{margin:0 0 .9rem}
 }
 .card.hi{background:linear-gradient(180deg, color-mix(in srgb, var(--brand) 7%, var(--card)), color-mix(in srgb, var(--accent) 3%, var(--card)));}
 .list{display:grid;gap:.8rem}
+.contact-list div{display:flex;align-items:center;gap:.65rem}
+.contact-list i{flex:none;width:1.15em;text-align:center;color:var(--brand);font-size:1rem}
 
 /* Pills / tags / badges */
 .pill{

@@ -62,7 +62,8 @@ async function renderNewsTeaser(targetId, maxItems){
 })();
 
 /* Lightbox: click any figure/gallery/portrait image to view it floating and
-   zoomable. Click the image to zoom in/out; click the backdrop, the close
+   zoomable. Click the image, or scroll/pinch over it, to zoom in/out toward
+   the cursor; drag to pan once zoomed. Click the backdrop, the close
    button, or Escape to dismiss. */
 (function(){
   var targets = document.querySelectorAll('.illus img, .gallery img, .portrait-frame img');
@@ -90,7 +91,43 @@ async function renderNewsTeaser(targetId, maxItems){
 
   document.body.appendChild(overlay);
 
-  function exitZoom(){
+  // scale === 1 means "fit to screen" (the browser-computed max-width/
+  // max-height/object-fit size). fitWidth/fitHeight are captured fresh
+  // each time an image loads, since every figure has a different size.
+  var scale = 1, fitWidth = 0, fitHeight = 0, maxScale = 4;
+
+  function setScale(newScale, clientX, clientY){
+    newScale = Math.min(maxScale, Math.max(1, newScale));
+    if(newScale === scale) return;
+
+    // Back to fit scale: just re-center, nothing to keep under the cursor.
+    if(newScale === 1){
+      resetZoom();
+      return;
+    }
+
+    var overlayRect = overlay.getBoundingClientRect();
+    var beforeRect = img.getBoundingClientRect();
+    // Fraction of the image under the cursor, so that exact point stays
+    // under the cursor after resizing (standard "zoom toward pointer").
+    var fx = beforeRect.width ? (clientX - beforeRect.left) / beforeRect.width : 0.5;
+    var fy = beforeRect.height ? (clientY - beforeRect.top) / beforeRect.height : 0.5;
+
+    scale = newScale;
+    img.style.maxWidth = 'none';
+    img.style.maxHeight = 'none';
+    img.style.width = Math.round(fitWidth * scale) + 'px';
+    overlay.classList.add('zoomed');
+
+    var afterRect = img.getBoundingClientRect();
+    var imgLeftInScroll = overlay.scrollLeft + (afterRect.left - overlayRect.left);
+    var imgTopInScroll = overlay.scrollTop + (afterRect.top - overlayRect.top);
+    overlay.scrollLeft = imgLeftInScroll + fx * afterRect.width - (clientX - overlayRect.left);
+    overlay.scrollTop = imgTopInScroll + fy * afterRect.height - (clientY - overlayRect.top);
+  }
+
+  function resetZoom(){
+    scale = 1;
     img.style.width = '';
     img.style.maxWidth = '';
     img.style.maxHeight = '';
@@ -99,29 +136,8 @@ async function renderNewsTeaser(targetId, maxItems){
     overlay.scrollLeft = 0;
   }
 
-  // Zoom in, keeping the point under (clientX, clientY) in view instead of
-  // always jumping to the top-left corner of the enlarged image.
-  function enterZoom(clientX, clientY){
-    var beforeRect = img.getBoundingClientRect();
-    var fx = beforeRect.width ? (clientX - beforeRect.left) / beforeRect.width : 0.5;
-    var fy = beforeRect.height ? (clientY - beforeRect.top) / beforeRect.height : 0.5;
-
-    var targetWidth = Math.max(img.naturalWidth || 0, Math.round(window.innerWidth * 1.6));
-    img.style.maxWidth = 'none';
-    img.style.maxHeight = 'none';
-    img.style.width = targetWidth + 'px';
-    overlay.classList.add('zoomed');
-
-    var overlayRect = overlay.getBoundingClientRect();
-    var afterRect = img.getBoundingClientRect();
-    var imgLeftInScroll = overlay.scrollLeft + (afterRect.left - overlayRect.left);
-    var imgTopInScroll = overlay.scrollTop + (afterRect.top - overlayRect.top);
-    overlay.scrollLeft = imgLeftInScroll + fx * afterRect.width - overlay.clientWidth / 2;
-    overlay.scrollTop = imgTopInScroll + fy * afterRect.height - overlay.clientHeight / 2;
-  }
-
   function open(src, alt){
-    exitZoom();
+    resetZoom();
     img.src = src;
     img.alt = alt || '';
     caption.textContent = alt || '';
@@ -132,10 +148,17 @@ async function renderNewsTeaser(targetId, maxItems){
 
   function close(){
     overlay.classList.remove('open');
-    exitZoom();
+    resetZoom();
     img.src = '';
     document.body.style.overflow = '';
   }
+
+  img.addEventListener('load', function(){
+    var r = img.getBoundingClientRect();
+    fitWidth = r.width;
+    fitHeight = r.height;
+    maxScale = Math.min(6, Math.max(2, (img.naturalWidth || fitWidth) / (fitWidth || 1)));
+  });
 
   targets.forEach(function(el){
     el.style.cursor = 'zoom-in';
@@ -155,7 +178,7 @@ async function renderNewsTeaser(targetId, maxItems){
     downX = lastX = e.clientX;
     downY = lastY = e.clientY;
     img.setPointerCapture(e.pointerId);
-    if(overlay.classList.contains('zoomed')) overlay.classList.add('dragging');
+    if(scale > 1) overlay.classList.add('dragging');
     e.preventDefault();
   });
 
@@ -163,7 +186,7 @@ async function renderNewsTeaser(targetId, maxItems){
     if(!dragging) return;
     var dx = e.clientX - lastX, dy = e.clientY - lastY;
     if(!moved && Math.abs(e.clientX - downX) + Math.abs(e.clientY - downY) > 4) moved = true;
-    if(moved && overlay.classList.contains('zoomed')){
+    if(moved && scale > 1){
       overlay.scrollLeft -= dx;
       overlay.scrollTop -= dy;
     }
@@ -174,11 +197,16 @@ async function renderNewsTeaser(targetId, maxItems){
   img.addEventListener('pointerup', function(e){
     dragging = false;
     overlay.classList.remove('dragging');
-    if(!moved){
-      if(overlay.classList.contains('zoomed')) exitZoom();
-      else enterZoom(e.clientX, e.clientY);
-    }
+    if(!moved) setScale(scale > 1 ? 1 : Math.min(2.5, maxScale), e.clientX, e.clientY);
   });
+
+  // Mouse wheel / trackpad scroll zooms toward the cursor.
+  overlay.addEventListener('wheel', function(e){
+    if(!overlay.classList.contains('open')) return;
+    e.preventDefault();
+    var factor = Math.pow(1.0015, -e.deltaY);
+    setScale(scale * factor, e.clientX, e.clientY);
+  }, {passive: false});
 
   overlay.addEventListener('click', function(e){
     if(e.target === overlay) close();

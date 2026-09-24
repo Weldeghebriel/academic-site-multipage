@@ -61,6 +61,43 @@ async function renderNewsTeaser(targetId, maxItems){
   if(y) y.textContent = new Date().getFullYear();
 })();
 
+/* Light/dark theme toggle. The actual attribute is applied as early as
+   possible by a small inline script in each page's <head> (reading the same
+   localStorage key) so there's no flash of the wrong theme on load; this
+   just wires up the button and keeps it in sync. */
+(function(){
+  var nav = document.getElementById('site-nav');
+  if(!nav) return;
+
+  var KEY = 'theme';
+  function current(){
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  }
+  function apply(mode){
+    document.documentElement.setAttribute('data-theme', mode);
+    try{ localStorage.setItem(KEY, mode); }catch(e){}
+    render();
+  }
+  function render(){
+    var mode = current();
+    btn.textContent = mode === 'light' ? '☾ Dark' : '☀ Light';
+    btn.setAttribute('aria-label', mode === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+    btn.setAttribute('title', btn.getAttribute('aria-label'));
+  }
+
+  var navToggle = document.querySelector('.nav-toggle');
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'theme-toggle';
+  btn.addEventListener('click', function(){
+    apply(current() === 'light' ? 'dark' : 'light');
+    nav.setAttribute('data-open', 'false');
+    if(navToggle) navToggle.setAttribute('aria-expanded', 'false');
+  });
+  nav.appendChild(btn);
+  render();
+})();
+
 /* Lightbox: click any figure/gallery/portrait image to view it floating and
    zoomable. Click the image, or scroll/pinch over it, to zoom in/out toward
    the cursor; drag to pan once zoomed. Click the backdrop, the close

@@ -98,6 +98,16 @@ async function renderNewsTeaser(targetId, maxItems){
   render();
 })();
 
+/* Autoplaying videos: respect the "reduce motion" preference by pausing them. */
+(function(){
+  if(!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('video.autoplay-video').forEach(function(v){
+    v.removeAttribute('autoplay');
+    v.pause();
+    v.controls = true;
+  });
+})();
+
 /* Lightbox: click any figure/gallery/portrait image to view it floating and
    zoomable. Click the image, or scroll/pinch over it, to zoom in/out toward
    the cursor; drag to pan once zoomed. Click the backdrop, the close

@@ -235,6 +235,8 @@ figure{margin:0}
 /* Illustration frame */
 .illus{background:var(--card-hi);border:1px solid var(--border);border-radius:14px;padding:.6rem}
 .illus img{border-radius:8px}
+.illus video{display:block;border-radius:8px}
+.illus video.autoplay-video{aspect-ratio:4/3;object-fit:cover}
 
 /* Timeline */
 .timeline{border-left:2px solid var(--border);margin-left:.4rem;padding-left:1.3rem;display:grid;gap:1.4rem}
